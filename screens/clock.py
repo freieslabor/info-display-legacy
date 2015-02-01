@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import InfoScreen
-import pygame, logging, time
+import pygame, logging
 from datetime import datetime, timedelta
 from .helper.fontsurface import FontSurface
 

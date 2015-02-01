@@ -1,7 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import pygame, pygame.mouse, logging, os
+import pygame, pygame.mouse, logging, os, ConfigParser
+import os.path
 from screens.base import InfoScreen
 
 # windowed mode if True
@@ -12,6 +13,9 @@ class InfoDisplay:
 	def __init__(self):
 		"Ininitializes a new pygame screen using the framebuffer"
 		self.infoScreens = []
+
+		self.config = ConfigParser.SafeConfigParser()
+		self.config.read(os.path.join(os.path.dirname(__file__), "config"))
 
 		if DEBUG:
 			logging.info("DEBUG MODE")
@@ -62,8 +66,19 @@ class InfoDisplay:
 	def initScreens(self):
 		"""Initializes all screens."""
 		for currentScreen in InfoScreen.__subclasses__():
-			logging.debug("Initializing %s." % currentScreen.__name__)
-			self.infoScreens.append(currentScreen(self.screen))
+			screenName = currentScreen.__name__
+			logging.debug("Initializing %s." % screenName)
+			# try to get the corresponding config section
+			try:
+				conf = self.config._sections[screenName]
+				logging.debug("Found config section for %s." % screenName)
+			except KeyError:
+				conf = None
+
+			if conf:
+				self.infoScreens.append(currentScreen(self.screen, conf))
+			else:
+				self.infoScreens.append(currentScreen(self.screen))
 
 	def cycleScreens(self):
 		"""Cycle through all screens in subdirectory."""

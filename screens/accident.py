@@ -2,34 +2,39 @@
 # -*- coding: utf-8 -*-
 
 from base import InfoScreen
-import pygame, logging, time
-from datetime import datetime, timedelta
-from collections import namedtuple
+import pygame, logging
+from datetime import datetime
 from .helper.fontsurface import FontSurface
 
 class AccidentScreen(InfoScreen):
 	"""Info screen that shows days since last accident ;)."""
 
-	def __init__(self, screen):
+	def __init__(self, screen, config):
 		"""Creates accident info screen.
 
 		Keyword arguments:
 		screen -- screen to display on"""
 		super(AccidentScreen, self).__init__(screen)
 
+		self.config = config
 		# seconds to display this info screen
 		self.displayTime = 10
+
+	def getDaysSinceAccident(self):
+		accident = datetime.strptime(self.config["last_accident"], '%Y-%m-%d')
+		delta = datetime.now() - accident
+		return delta.days
 
 	def show(self):
 		"""Shows date and time.
 
 		Keyword arguments:
 		screen -- screen to display on"""
-		startTime = datetime.now()
-		# choose nice font
+		# fonts
 		stdFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 60)
 		digitalFont = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 110)
 
+		# colors used
 		red = (255, 0, 0)
 		white = (255, 255, 255)
 		black = (0, 0, 0)
@@ -37,9 +42,9 @@ class AccidentScreen(InfoScreen):
 
 		# green screen
 		self.screen.fill(green)
-		# render red text with font
 		surfaces = []
 
+		# render text line by line (crazy y-values because of crappy fonts)
 		msg1 = FontSurface(self.screen, "THIS LAB HAS", stdFont)
 		msg1.centerX()
 		msg1.pos.y = 5
@@ -50,7 +55,9 @@ class AccidentScreen(InfoScreen):
 		msg2.pos.y = msg1.pos.y + 65
 		surfaces.append(msg2)
 
-		msg3 = FontSurface(self.screen, "489", digitalFont, red)
+		# day count
+		dayCountStr = str(self.getDaysSinceAccident())
+		msg3 = FontSurface(self.screen, dayCountStr, digitalFont, red)
 		msg3.centerX()
 		msg3.pos.y = msg2.pos.y + 75
 		surfaces.append(msg3)
