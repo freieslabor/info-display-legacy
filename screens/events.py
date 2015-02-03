@@ -6,6 +6,7 @@ import pygame, logging
 from datetime import datetime
 from .helper.fontsurface import FontSurface
 from lxml import etree
+from .helper.textrect import render_textrect, TextRectException
 
 class EventScreen(InfoScreen):
 	"""Info screen that shows upcoming events."""
@@ -46,26 +47,29 @@ class EventScreen(InfoScreen):
 		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 70)
 		stdFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 30)
 
-		# black screen
-		self.screen.fill((0, 0, 0))
+		# colors used
+		black = (0, 0, 0)
+		white = (255, 255, 255)
 
-		# headline
-		headline = FontSurface(self.screen, u"Nächste Termine", headlineFont)
-		headline.centerX()
-		headline.pos.y = 0
-		headline.blit()
+		# black screen
+		self.screen.fill(black)
 
 		# event loop
 		currentY = 100
 		events = self.getEvents()
 		for date, title in events.items()[:7]:
-			# FIXME: needs line wrapping
+			# render one event at a time with a bullet point
 			eventStr = u"\u00BB %s: %s" % (date, title)
-			event = FontSurface(self.screen, eventStr, stdFont)
+
+			# this only acts as a container here
+			event = FontSurface(self.screen, "", stdFont)
+			scrRect = self.screen.get_rect()
+			surface = render_textrect(eventStr, stdFont, scrRect, white, black)
+			event.surface = surface
 			event.pos.x = 10
 			event.pos.y = currentY
 			event.blit()
-			currentY += 100
+			currentY += event.pos.height + 10
 
 		# no events available
 		if len(events) == 0:
@@ -74,6 +78,12 @@ class EventScreen(InfoScreen):
 			msg.centerX()
 			msg.centerY()
 			msg.blit()
+
+		# headline
+		headline = FontSurface(self.screen, u"Nächste Termine", headlineFont)
+		headline.centerX()
+		headline.pos.y = 0
+		headline.blit()
 
 		# show it
 		pygame.display.flip()
