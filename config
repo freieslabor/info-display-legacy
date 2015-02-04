@@ -5,3 +5,5 @@ last_accident: 2015-01-30
 [EventScreen]
 feed: http://freieslabor.org/wiki/Spezial:Semantische_Suche/-5B-5BKategorie:Event-5D-5D-20-5B-5BIsFutureDate::wahr-5D-5D/-3FEventTitle/-3FDatum-23MEDIAWIKI/format%3Dfeed/sort%3DEnddate/order%3Dascending/headers%3Dplain/mainlabel%3D-2D/type%3Datom/title%3DFreies-20Labor-20e.V.-20-2D-20Termine/offset%3D0
 
+[BusScreen]
+station_id: 25721026
