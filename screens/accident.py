@@ -18,7 +18,7 @@ class AccidentScreen(InfoScreen):
 
 		self.config = config
 		# seconds to display this info screen
-		self.displayTime = 10
+		self.displayTime = 5
 
 	def getDaysSinceAccident(self):
 		accident = datetime.strptime(self.config["last_accident"], '%Y-%m-%d')

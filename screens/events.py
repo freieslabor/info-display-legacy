@@ -36,8 +36,10 @@ class EventScreen(InfoScreen):
 					date = entry.xpath("ns:summary/text()", namespaces=ns)[0]
 					events[date] = title
 				except IndexError:
+					self.log(logging.ERROR, "XPath did not return anything.")
 					continue
-		except (IOError, etree.XMLSyntaxError):
+		except (IOError, etree.XMLSyntaxError) as e:
+			self.log(logging.ERROR, e)
 			return {}
 		return events
 
@@ -73,11 +75,13 @@ class EventScreen(InfoScreen):
 
 		# no events available
 		if len(events) == 0:
-			msgStr = "Momentan sind keine Termine geplant."
-			msg = FontSurface(self.screen, msgStr, stdFont)
-			msg.centerX()
-			msg.centerY()
-			msg.blit()
+			self.log(logging.DEBUG, "No events found. Skipping.")
+			return
+			#msgStr = "Momentan sind keine Termine geplant."
+			#msg = FontSurface(self.screen, msgStr, stdFont)
+			#msg.centerX()
+			#msg.centerY()
+			#msg.blit()
 
 		# headline
 		headline = FontSurface(self.screen, u"Nächste Termine", headlineFont)
