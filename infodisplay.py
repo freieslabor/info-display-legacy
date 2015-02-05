@@ -6,7 +6,7 @@ import os.path
 from screens.base import InfoScreen
 
 # windowed mode if True
-DEBUG = True
+DEBUG = False
 
 class InfoDisplay:
 	""""""
@@ -84,7 +84,7 @@ class InfoDisplay:
 		"""Cycle through all screens in subdirectory."""
 		for infoScreen in self.infoScreens:
 			logging.debug("Showing %s." % infoScreen.__class__.__name__)
-			infoScreen.show()
+			infoScreen.showScreen()
 
 if __name__ == "__main__":
 	logging.basicConfig(level=logging.DEBUG,
