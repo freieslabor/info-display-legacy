@@ -35,7 +35,7 @@ class BusScreen(InfoScreen):
 		try:
 			# xml parsing and xpath magic
 			url = "http://mobil.efa.de/mobile3/XSLT_DM_REQUEST"
-			args = "?outputFormat=xml&mode=direct&name_dm=%s&limit=10&type_dm=stopID" % self.config["station_id"]
+			args = "?outputFormat=xml&mode=direct&name_dm=%s&limit=30&type_dm=stopID" % self.config["station_id"]
 
 			tree = etree.parse(url + args, parser)
 			deps = tree.xpath("/itdRequest/itdDepartureMonitorRequest/itdDepartureList/itdDeparture[*]")
@@ -56,19 +56,27 @@ class BusScreen(InfoScreen):
 					dateTime = datetime.strptime(dateTimeStr, "%d.%m.%Y %H:%M")
 
 					# parse line and direction
-					sLineElement = dep.xpath("./itdServingLine")[0]
-					number = sLineElement.get("number")
-					direction = sLineElement.get("direction")
+					lineElem = dep.xpath("./itdServingLine")[0]
+					number = lineElem.get("number")
+					direction = lineElem.get("direction")
 
-					self.buses.append((dateTime, number, direction))
+					transport = lineElem.xpath("./itdNoTrain")[0].get("name")
+
+					self.buses.append((dateTime, number, direction, transport))
 				except IndexError:
 					self.log(logging.ERROR, "XPath did not return anything.")
 					continue
 		except (IOError, etree.XMLSyntaxError) as e:
 			self.log(logging.ERROR, e)
 			return []
+		self.log(logging.DEBUG, len(self.buses))
 		self.lastUpdate = datetime.now()
 		return self.buses
+
+	def filterBuses(self, bus):
+		date = bus[0]
+		deltaSecs = (datetime.now() - date).total_seconds()
+		return deltaSecs < 0
 
 	def show(self):
 		"""Shows departing buses."""
@@ -89,19 +97,24 @@ class BusScreen(InfoScreen):
 
 			# bus loop
 			currentY = 140
-			buses = self.getBuses()
-			for date, number, direction in buses[:3]:
+			# ignore buses that departed or will depart in > 99 min
+			buses = filter(self.filterBuses, self.getBuses())
+			for date, number, direction, transport in buses[:3]:
 				# calculate delta
-				deltaSecs = (datetime.now() - date).total_seconds()
-				# ignore buses that departed or will depart in > 99 min
-				if deltaSecs >= 0 or deltaSecs < -60*99:
-					continue
-				deltaMins = int(abs(deltaSecs / 60))
+				delta = datetime.now() - date
+				deltaMins = int(abs(delta.total_seconds() / 60))
 
 				# render one bus departure at a time with a bullet point
-				remaining = "jetzt     " if deltaMins == 0 else "in %02d Min." \
-					% deltaMins
-				busStr = u"\u00BB %s Linie %s nach %s" % (remaining, number, direction)
+				if deltaMins == 0:
+					remaining = "jetzt     "
+				elif delta.total_seconds() < -60*99:
+					remaining = date.strftime("%H:%M Uhr ")
+				else:
+					remaining = "in %02d Min." % deltaMins
+
+				transport = " %s" % transport if transport != "Bus" else ""
+				busStr = u"\u00BB %s Linie %s nach %s%s" \
+					% (remaining, number, direction, transport)
 
 				# this only acts as a container here
 				bus = FontSurface(self.screen, "", stdFont)
@@ -115,11 +128,15 @@ class BusScreen(InfoScreen):
 
 			# no buses departing
 			if len(buses) == 0:
+				self.log(logging.ERROR, "No buses found. Skipping.")
+				return
+				"""
 				msgStr = "Momentan fahren keine Busse."
 				msg = FontSurface(self.screen, msgStr, stdFont)
 				msg.centerX()
 				msg.centerY()
 				msg.blit()
+				"""
 
 			# headline
 			headline = FontSurface(self.screen, u"Busabfahrten", headlineFont)
