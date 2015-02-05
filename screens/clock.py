@@ -16,7 +16,7 @@ class ClockScreen(InfoScreen):
 		super(ClockScreen, self).__init__(screen)
 
 		# seconds to display this info screen
-		self.displayTime = 10
+		self.displayTime = 5
 
 	def show(self):
 		"""Shows date and time."""
