@@ -6,7 +6,7 @@ import os.path
 from screens.base import InfoScreen
 
 # windowed mode if True
-DEBUG = False
+DEBUG = True
 
 class InfoDisplay:
 	""""""
@@ -19,7 +19,7 @@ class InfoDisplay:
 
 		if DEBUG:
 			logging.info("DEBUG MODE")
-			self.screen = pygame.display.set_mode((640, 480))
+			self.screen = pygame.display.set_mode((1440, 900))
 			pygame.display.set_caption("Info-Display")
 		else:
 			# Based on "Python GUI in Linux frame buffer"
