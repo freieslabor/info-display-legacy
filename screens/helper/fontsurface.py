@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 class FontSurface:
+	"""Represents a font surface with all required attributes."""
 	def __init__(self, screen, text, font, color=(255, 255, 255)):
 		self.screen = screen
 		self.text = text
@@ -33,8 +34,10 @@ class FontSurface:
 		self.pos = protoSurface.get_rect()
 
 	def rect(self):
+		"""Returns rectangle of surface."""
 		return self.surface.get_rect()
 
 	def blit(self):
+		"""Blits the font surface on the screen."""
 		self.screen.blit(self.surface, self.pos)
 

@@ -1,14 +1,14 @@
-mpc display
-===========
+info-display
+============
 
-A simple app for displaying song information (like ID3 tags)
-using mpc (music player client).
+Simple, extendable info display.
 
-Set up mpd, install mpc and call mpc-display.py like this:
+## Screens
+* no accident for X days
+* bus departures
+* next events (from atom feed)
+* clock
 
-`python mpc-display.py -h <mpd ip> -p <mpd port>`
-
-## Disclaimers
-This script uses
-* [Let's go Digital font](http://www.fontspace.com/wlm-fonts/lets-go-digital) by [WLM Fonts](http://www.fontspace.com/wlm-fonts) (leddigital.ttf)
-* [Word-wrapped text display module](http://www.pygame.org/pcr/text_rect/index.php) by David Clark (textrect.py)
+## Dependencies
+* Debian: `apt-get install python-pygame python-lxml`
+* locale: de_DE.UTF-8 (`dpkg-reconfigure locales`)

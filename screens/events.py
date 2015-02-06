@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from .base import InfoScreen
-import pygame, logging
+import pygame, logging, locale
 from datetime import datetime
 from .helper.fontsurface import FontSurface
 from lxml import etree
@@ -19,7 +19,7 @@ class EventScreen(InfoScreen):
 
 		self.config = config
 		# seconds to display this info screen
-		self.displayTime = 15
+		self.displayTime = 1500
 
 	def getEvents(self):
 		"""Parses event feed and returns events as date-title dict."""
@@ -46,8 +46,8 @@ class EventScreen(InfoScreen):
 	def show(self):
 		"""Shows upcoming events."""
 		# fonts
-		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 70)
-		stdFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 30)
+		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 130)
+		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf", 55)
 
 		# colors used
 		black = (0, 0, 0)
@@ -57,11 +57,15 @@ class EventScreen(InfoScreen):
 		self.screen.fill(black)
 
 		# event loop
-		currentY = 100
+		currentY = 200
 		events = self.getEvents()
-		for date, title in events.items()[:7]:
+		for date, title in events.items()[-5:]:
+			# parse date
+			locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
+			date = datetime.strptime(date.encode("utf-8"), "%H:%M, %d. %b. %Y")
+			locale.setlocale(locale.LC_TIME, "")
 			# render one event at a time with a bullet point
-			eventStr = u"\u00BB %s: %s" % (date, title)
+			eventStr = u"\u00BB %s: %s" % (date.strftime("%d.%m., %H:%M"), title)
 
 			# this only acts as a container here
 			event = FontSurface(self.screen, "", stdFont)
@@ -71,17 +75,19 @@ class EventScreen(InfoScreen):
 			event.pos.x = 10
 			event.pos.y = currentY
 			event.blit()
-			currentY += event.pos.height + 10
+			currentY += event.pos.height * 2
 
 		# no events available
 		if len(events) == 0:
 			self.log(logging.DEBUG, "No events found. Skipping.")
 			return
-			#msgStr = "Momentan sind keine Termine geplant."
-			#msg = FontSurface(self.screen, msgStr, stdFont)
-			#msg.centerX()
-			#msg.centerY()
-			#msg.blit()
+			"""
+			msgStr = "Momentan sind keine Termine geplant."
+			msg = FontSurface(self.screen, msgStr, stdFont)
+			msg.centerX()
+			msg.centerY()
+			msg.blit()
+			"""
 
 		# headline
 		headline = FontSurface(self.screen, u"Nächste Termine", headlineFont)

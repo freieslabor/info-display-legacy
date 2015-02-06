@@ -23,8 +23,8 @@ class ClockScreen(InfoScreen):
 		startTime = datetime.now()
 		self.log(logging.DEBUG, "Showing date/time.")
 		# choose nice font
-		digitalFont70 = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 70)
-		digitalFont130 = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 130)
+		digitalFont70 = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 200)
+		digitalFont130 = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 350)
 
 		# show clock for specified time
 		while startTime + timedelta(seconds=self.displayTime) > datetime.now():
@@ -37,15 +37,15 @@ class ClockScreen(InfoScreen):
 			red = (255, 0, 0)
 
 			renderedDate = FontSurface(self.screen, dateStr, digitalFont70, red)
-			renderedDate.protoStr("88.88.8888")
 			renderedDate.centerX()
+			renderedDate.pos.x -= 34*datetime.now().strftime("%d").count("1")
 			renderedDate.pos.y = 100
 			renderedDate.blit()
 
 			renderedTime = FontSurface(self.screen, timeStr, digitalFont130, red)
-			renderedTime.protoStr("88:88:88")
 			renderedTime.centerX()
-			renderedTime.pos.y = 200
+			renderedTime.pos.x -= 60*datetime.now().strftime("%H").count("1")
+			renderedTime.pos.y = 400
 			renderedTime.blit()
 
 			# show it

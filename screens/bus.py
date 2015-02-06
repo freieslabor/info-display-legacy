@@ -69,7 +69,6 @@ class BusScreen(InfoScreen):
 		except (IOError, etree.XMLSyntaxError) as e:
 			self.log(logging.ERROR, e)
 			return []
-		self.log(logging.DEBUG, len(self.buses))
 		self.lastUpdate = datetime.now()
 		return self.buses
 
@@ -81,9 +80,9 @@ class BusScreen(InfoScreen):
 	def show(self):
 		"""Shows departing buses."""
 		# fonts
-		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 70)
-		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf", 30)
-		digitalFont = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 50)
+		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 130)
+		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf", 55)
+		digitalFont = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 120)
 
 		# colors used
 		black = (0, 0, 0)
@@ -96,7 +95,7 @@ class BusScreen(InfoScreen):
 			self.screen.fill(black)
 
 			# bus loop
-			currentY = 140
+			currentY = 240
 			# ignore buses that departed or will depart in > 99 min
 			buses = filter(self.filterBuses, self.getBuses())
 			for date, number, direction, transport in buses[:3]:
@@ -106,14 +105,14 @@ class BusScreen(InfoScreen):
 
 				# render one bus departure at a time with a bullet point
 				if deltaMins == 0:
-					remaining = "jetzt     "
+					remaining = "jetzt  "
 				elif delta.total_seconds() < -60*99:
-					remaining = date.strftime("%H:%M Uhr ")
+					remaining = date.strftime("%H:%M  ")
 				else:
-					remaining = "in %02d Min." % deltaMins
+					remaining = "%02d Min:" % deltaMins
 
 				transport = " %s" % transport if transport != "Bus" else ""
-				busStr = u"\u00BB %s Linie %s nach %s%s" \
+				busStr = u"\u00BB %s  %s %s%s" \
 					% (remaining, number, direction, transport)
 
 				# this only acts as a container here
@@ -124,7 +123,14 @@ class BusScreen(InfoScreen):
 				bus.pos.x = 10
 				bus.pos.y = currentY
 				bus.blit()
-				currentY += bus.pos.height + 40
+
+				# draw circle around bus line number
+				if len(number) == 1:
+					pygame.draw.circle(self.screen, white, (390, currentY+32), 38, 7)
+				elif len(number) == 3:
+					pygame.draw.circle(self.screen, white, (425, currentY+32), 60, 7)
+
+				currentY += bus.pos.height + 130
 
 			# no buses departing
 			if len(buses) == 0:
@@ -139,7 +145,7 @@ class BusScreen(InfoScreen):
 				"""
 
 			# headline
-			headline = FontSurface(self.screen, u"Busabfahrten", headlineFont)
+			headline = FontSurface(self.screen, u"Nächste Busse", headlineFont)
 			headline.centerX()
 			headline.pos.y = 0
 			headline.blit()
@@ -148,8 +154,8 @@ class BusScreen(InfoScreen):
 			timeStr = datetime.now().strftime("%H:%M:%S")
 			renderedDate = FontSurface(self.screen, timeStr, digitalFont, red)
 			renderedDate.protoStr("88.88.8888")
-			renderedDate.centerX()
-			renderedDate.pos.y = 80
+			renderedDate.pos.x = 990
+			renderedDate.pos.y = 770
 			renderedDate.blit()
 
 			# show it
