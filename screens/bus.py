@@ -80,9 +80,12 @@ class BusScreen(InfoScreen):
 	def show(self):
 		"""Shows departing buses."""
 		# fonts
-		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 130)
-		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf", 55)
-		digitalFont = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 120)
+		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf",
+			self.relH(.15))
+		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf",
+			self.relH(.06))
+		digitalFont = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf",
+			self.relH(.13))
 
 		# colors used
 		black = (0, 0, 0)
@@ -95,10 +98,11 @@ class BusScreen(InfoScreen):
 			self.screen.fill(black)
 
 			# bus loop
-			currentY = 240
+			currentY = self.relH(.25)
 			# ignore buses that departed or will depart in > 99 min
 			buses = filter(self.filterBuses, self.getBuses())
 			for date, number, direction, transport in buses[:3]:
+				number = "5" # FIXME!!!!
 				# calculate delta
 				delta = datetime.now() - date
 				deltaMins = int(abs(delta.total_seconds() / 60))
@@ -120,17 +124,22 @@ class BusScreen(InfoScreen):
 				scrRect = self.screen.get_rect()
 				surface = render_textrect(busStr, stdFont, scrRect, white, black)
 				bus.surface = surface
-				bus.pos.x = 10
+				bus.pos.x = self.relW(.007)
 				bus.pos.y = currentY
 				bus.blit()
 
 				# draw circle around bus line number
+				border = self.relW(.008)
 				if len(number) == 1:
-					pygame.draw.circle(self.screen, white, (390, currentY+32), 38, 7)
+					pos = (self.relW(.277) - border, currentY + self.relH(.036))
+					radius = self.relH(.045)
 				elif len(number) == 3:
-					pygame.draw.circle(self.screen, white, (425, currentY+32), 60, 7)
+					pos = (self.relW(.293), currentY + self.relH(.038))
+					radius = self.relH(.073)
 
-				currentY += bus.pos.height + 130
+				pygame.draw.circle(self.screen, white, pos, radius, border)
+
+				currentY += bus.pos.height + self.relH(.14)
 
 			# no buses departing
 			if len(buses) == 0:
@@ -154,8 +163,8 @@ class BusScreen(InfoScreen):
 			timeStr = datetime.now().strftime("%H:%M:%S")
 			renderedDate = FontSurface(self.screen, timeStr, digitalFont, red)
 			renderedDate.protoStr("88.88.8888")
-			renderedDate.pos.x = 990
-			renderedDate.pos.y = 770
+			renderedDate.pos.x = self.relW(.70)
+			renderedDate.pos.y = self.relH(.86)
 			renderedDate.blit()
 
 			# show it

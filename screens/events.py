@@ -19,7 +19,7 @@ class EventScreen(InfoScreen):
 
 		self.config = config
 		# seconds to display this info screen
-		self.displayTime = 1500
+		self.displayTime = 15
 
 	def getEvents(self):
 		"""Parses event feed and returns events as date-title dict."""
@@ -46,8 +46,10 @@ class EventScreen(InfoScreen):
 	def show(self):
 		"""Shows upcoming events."""
 		# fonts
-		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf", 130)
-		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf", 55)
+		headlineFont = pygame.font.Font("fonts/blue_highway_bd.ttf",
+			self.relH(.1))
+		stdFont = pygame.font.Font("fonts/DejaVuSansMono.ttf",
+			self.relH(.06))
 
 		# colors used
 		black = (0, 0, 0)
@@ -57,7 +59,7 @@ class EventScreen(InfoScreen):
 		self.screen.fill(black)
 
 		# event loop
-		currentY = 200
+		currentY = self.relH(.2)
 		events = self.getEvents()
 		for date, title in events.items()[-5:]:
 			# parse date
@@ -65,14 +67,14 @@ class EventScreen(InfoScreen):
 			date = datetime.strptime(date.encode("utf-8"), "%H:%M, %d. %b. %Y")
 			locale.setlocale(locale.LC_TIME, "")
 			# render one event at a time with a bullet point
-			eventStr = u"\u00BB %s: %s" % (date.strftime("%d.%m., %H:%M"), title)
+			eventStr = u"\u00BB %s: %s" % (date.strftime("%d.%m. %H:%M"), title)
 
 			# this only acts as a container here
 			event = FontSurface(self.screen, "", stdFont)
 			scrRect = self.screen.get_rect()
 			surface = render_textrect(eventStr, stdFont, scrRect, white, black)
 			event.surface = surface
-			event.pos.x = 10
+			event.pos.x = self.relW(.007)
 			event.pos.y = currentY
 			event.blit()
 			currentY += event.pos.height * 2

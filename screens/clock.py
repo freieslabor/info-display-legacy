@@ -23,8 +23,9 @@ class ClockScreen(InfoScreen):
 		startTime = datetime.now()
 		self.log(logging.DEBUG, "Showing date/time.")
 		# choose nice font
-		digitalFont70 = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 200)
-		digitalFont130 = pygame.font.Font("fonts/LetsgoDigital-Regular.ttf", 350)
+		ledFontFile = "fonts/LetsgoDigital-Regular.ttf"
+		ledFontNormal = pygame.font.Font(ledFontFile, self.relH(.2))
+		ledFontBig = pygame.font.Font(ledFontFile, self.relH(.4))
 
 		# show clock for specified time
 		while startTime + timedelta(seconds=self.displayTime) > datetime.now():
@@ -36,16 +37,22 @@ class ClockScreen(InfoScreen):
 			# render red text with font
 			red = (255, 0, 0)
 
-			renderedDate = FontSurface(self.screen, dateStr, digitalFont70, red)
+			renderedDate = FontSurface(self.screen, dateStr, ledFontNormal, red)
 			renderedDate.centerX()
-			renderedDate.pos.x -= 34*datetime.now().strftime("%d").count("1")
-			renderedDate.pos.y = 100
+			# adjust date position if it starts with "1" (because of LED font)
+			day = datetime.now().strftime("%d")
+			dateXMulti = self.relW(.02)
+			if day[0] == "1": renderedDate.pos.x -= dateXMulti
+			renderedDate.pos.y = self.relH(.1)
 			renderedDate.blit()
 
-			renderedTime = FontSurface(self.screen, timeStr, digitalFont130, red)
+			renderedTime = FontSurface(self.screen, timeStr, ledFontBig, red)
 			renderedTime.centerX()
-			renderedTime.pos.x -= 60*datetime.now().strftime("%H").count("1")
-			renderedTime.pos.y = 400
+			# adjust time position if it starts with "1" (because of LED font)
+			hour = datetime.now().strftime("%H")
+			timeXMulti = self.relW(.04)
+			if hour[0] == "1": renderedTime.pos.x -= timeXMulti
+			renderedTime.pos.y = self.relH(.4)
 			renderedTime.blit()
 
 			# show it

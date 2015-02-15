@@ -23,6 +23,14 @@ class InfoScreen(object):
 		self.lastCalled = datetime.now()
 		self.show()
 
+	def relH(self, relPosY):
+		"""Calculates absolute y relative to screen height."""
+		return int(round(self.screen.get_height() * relPosY))
+
+	def relW(self, relPosX):
+		"""Calculates absolute x relative to screen width."""
+		return int(round(self.screen.get_width() * relPosX))
+
 	def log(self, lvl, msg):
 		"""Logs message with given level. Message contains class name.
 

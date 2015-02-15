@@ -7,6 +7,8 @@ from screens.base import InfoScreen
 
 # windowed mode if True
 DEBUG = True
+DEBUG_RESOLUTION = (1440, 900)
+#DEBUG_RESOLUTION = (800, 500)
 
 class InfoDisplay:
 	""""""
@@ -19,7 +21,11 @@ class InfoDisplay:
 
 		if DEBUG:
 			logging.info("DEBUG MODE")
-			self.screen = pygame.display.set_mode((1440, 900))
+			x, y = DEBUG_RESOLUTION
+			if x / float(y) != 1.6:
+				logging.error("Resolution must have an aspect ratio of 1.6")
+				quit()
+			self.screen = pygame.display.set_mode(DEBUG_RESOLUTION)
 			pygame.display.set_caption("Info-Display")
 		else:
 			# Based on "Python GUI in Linux frame buffer"
@@ -53,8 +59,8 @@ class InfoDisplay:
 			size = (displayInfo.current_w, displayInfo.current_h)
 			logging.info("Framebuffer size: %d x %d" % (size[0], size[1]))
 			self.screen = pygame.display.set_mode(size, pygame.FULLSCREEN)
+			pygame.mouse.set_visible(False)
 
-		pygame.mouse.set_visible(False)
 		pygame.font.init()
 
 	def start(self):
