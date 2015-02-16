@@ -77,7 +77,7 @@ class AccidentScreen(InfoScreen):
 
 		# draw a black rectangle around counter
 		startX = msg2.pos.x - self.relW(.01)
-		endX = msg2.pos.width + self.relW(.03)
+		endX = msg2.pos.width + self.relW(.025)
 
 		pos = (startX, msg2.pos.y, endX, msg2.pos.height)
 		pygame.draw.rect(self.screen, black, pos)

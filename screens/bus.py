@@ -102,7 +102,6 @@ class BusScreen(InfoScreen):
 			# ignore buses that departed or will depart in > 99 min
 			buses = filter(self.filterBuses, self.getBuses())
 			for date, number, direction, transport in buses[:3]:
-				number = "5" # FIXME!!!!
 				# calculate delta
 				delta = datetime.now() - date
 				deltaMins = int(abs(delta.total_seconds() / 60))
@@ -129,10 +128,10 @@ class BusScreen(InfoScreen):
 				bus.blit()
 
 				# draw circle around bus line number
-				border = self.relW(.008)
+				border = self.relW(.005)
 				if len(number) == 1:
-					pos = (self.relW(.277) - border, currentY + self.relH(.036))
-					radius = self.relH(.045)
+					pos = (self.relW(.275) - border, currentY + self.relH(.036))
+					radius = self.relH(.042)
 				elif len(number) == 3:
 					pos = (self.relW(.293), currentY + self.relH(.038))
 					radius = self.relH(.073)
