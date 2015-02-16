@@ -44,7 +44,8 @@ class InfoScreen(object):
 		delta = timedelta(seconds=seconds)
 		# consider processing time
 		if self.lastCalled:
-			delta -= datetime.now() - self.lastCalled
+			processingTime = datetime.now() - self.lastCalled
+			if processingTime < delta: delta -= processingTime
 
 		# wait for short timespans to be able to respond to keyboard interrups
 		leftMs = int(delta.seconds*1e3 + round(delta.microseconds/1e3))
