@@ -23,7 +23,7 @@ class EventScreen(InfoScreen):
 
 	def getEvents(self):
 		"""Parses event feed and returns events as date-title dict."""
-		events = {}
+		events = []
 		parser = etree.XMLParser(ns_clean=True)
 		try:
 			# xml parsing and xpath magic
@@ -34,13 +34,13 @@ class EventScreen(InfoScreen):
 				try:
 					title = entry.xpath("ns:title/text()", namespaces=ns)[0]
 					date = entry.xpath("ns:summary/text()", namespaces=ns)[0]
-					events[date] = title
+					events.append((date, title))
 				except IndexError:
 					self.log(logging.ERROR, "XPath did not return anything.")
 					continue
 		except (IOError, etree.XMLSyntaxError) as e:
 			self.log(logging.ERROR, e)
-			return {}
+			return []
 		return events
 
 	def show(self):
@@ -61,10 +61,13 @@ class EventScreen(InfoScreen):
 		# event loop
 		currentY = self.relH(.2)
 		events = self.getEvents()
-		for date, title in events.items()[-5:]:
+		for date, title in events:
 			# parse date
 			locale.setlocale(locale.LC_TIME, "de_DE.UTF-8")
-			date = datetime.strptime(date.encode("utf-8"), "%H:%M, %d. %b. %Y")
+			try:
+				date = datetime.strptime(date.encode("utf-8"), "%H:%M, %d. %b. %Y")
+			except ValueError:
+				date = datetime.strptime(date.encode("utf-8"), "%H:%M, %d. %b %Y")
 			locale.setlocale(locale.LC_TIME, "")
 			# render one event at a time with a bullet point
 			eventStr = u"\u00BB %s: %s" % (date.strftime("%d.%m. %H:%M"), title)
